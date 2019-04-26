@@ -25,6 +25,7 @@ import com.mapache.coinapi.models.CoinList
 import com.mapache.coinapi.utilities.AppConstants
 import com.mapache.coinapi.utilities.NetworkUtil
 import kotlinx.android.synthetic.main.content_main.*
+import java.io.IOException
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -89,7 +90,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             val db = dbHelper.writableDatabase
             var coinApi = NetworkUtil().buildUrl(params[0]!!)
-            var listCoin = NetworkUtil().getResponseFromHttpUrl(coinApi)
+            var listCoin = ""
+            try {
+                listCoin = NetworkUtil().getResponseFromHttpUrl(coinApi)
+            } catch (e : IOException){
+                throw RuntimeException("No se logro obtener la informacion")
+            }
             coinList = Gson().fromJson(listCoin, CoinList::class.java)
             if(DatabaseUtils.queryNumEntries(db, "coin").toInt() != coinList.coins.size){
                 db.delete("coin", null, null)
