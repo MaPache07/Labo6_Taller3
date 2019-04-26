@@ -1,8 +1,11 @@
 package com.mapache.coinapi
 
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.database.DatabaseUtils
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.AsyncTask
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
@@ -16,6 +19,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.Menu
 import com.google.gson.Gson
 import com.mapache.coinapi.data.Database
@@ -85,32 +89,38 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     inner class FetchCoinTask : AsyncTask<String, Void, String>(){
         override fun doInBackground(vararg params: String?): String? {
-            if(params.size == 0){
-                return null
-            }
-            val db = dbHelper.writableDatabase
-            var coinApi = NetworkUtil().buildUrl(params[0]!!)
-            var listCoin = ""
-            try {
-                listCoin = NetworkUtil().getResponseFromHttpUrl(coinApi)
-            } catch (e : IOException){
-                throw RuntimeException("No se logro obtener la informacion")
-            }
-            coinList = Gson().fromJson(listCoin, CoinList::class.java)
-            if(DatabaseUtils.queryNumEntries(db, "coin").toInt() != coinList.coins.size){
-                db.delete("coin", null, null)
-                for(coin: Coin in coinList.coins){
-                    val values = ContentValues().apply {
-                        put(DatabaseContract.CoinEntry.COLUMN_NAME, coin.name)
-                        put(DatabaseContract.CoinEntry.COLUMN_COUNTRY, coin.country)
-                        put(DatabaseContract.CoinEntry.COLUMN_VALUE, coin.value)
-                        put(DatabaseContract.CoinEntry.COLUMN_VALUE_US, coin.values_us)
-                        put(DatabaseContract.CoinEntry.COLUMN_YEAR, coin.year)
-                        put(DatabaseContract.CoinEntry.COLUMN_VALUE, coin.value)
-                        put(DatabaseContract.CoinEntry.COLUMN_ISAVAILABLE, coin.isAvailable)
-                        put(DatabaseContract.CoinEntry.COLUMN_IMG, coin.img)
+            var connectivity : ConnectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            if(connectivity.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).state == NetworkInfo.State.CONNECTED){
+                if(params.size == 0){
+                    return null
+                }
+                val db = dbHelper.writableDatabase
+                var coinApi = NetworkUtil().buildUrl(params[0]!!)
+                var listCoin = ""
+                try {
+                    listCoin = NetworkUtil().getResponseFromHttpUrl(coinApi)
+                } catch (e : IOException){
+                    throw RuntimeException("No se logro obtener la informacion")
+                }
+                coinList = Gson().fromJson(listCoin, CoinList::class.java)
+                if(DatabaseUtils.queryNumEntries(db, "coin").toInt() != coinList.coins.size){
+                    db.delete("coin", null, null)
+                    for(coin: Coin in coinList.coins){
+                        val values = ContentValues().apply {
+                            put(DatabaseContract.CoinEntry.COLUMN_NAME, coin.name)
+                            put(DatabaseContract.CoinEntry.COLUMN_COUNTRY, coin.country)
+                            put(DatabaseContract.CoinEntry.COLUMN_VALUE, coin.value)
+                            put(DatabaseContract.CoinEntry.COLUMN_VALUE_US, coin.values_us)
+                            put(DatabaseContract.CoinEntry.COLUMN_YEAR, coin.year)
+                            put(DatabaseContract.CoinEntry.COLUMN_VALUE, coin.value)
+                            put(DatabaseContract.CoinEntry.COLUMN_ISAVAILABLE, coin.isAvailable)
+                            put(DatabaseContract.CoinEntry.COLUMN_IMG, coin.img)
+                        }
                     }
                 }
+            }
+            else{
+                //Aqui extrae de la base
             }
             return null
         }
