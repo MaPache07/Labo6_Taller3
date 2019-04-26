@@ -1,6 +1,7 @@
 package com.mapache.coinapi
 
 import android.content.ContentValues
+import android.content.Intent
 import android.database.DatabaseUtils
 import android.os.AsyncTask
 import android.os.Bundle
@@ -23,6 +24,7 @@ import com.mapache.coinapi.models.Coin
 import com.mapache.coinapi.models.CoinList
 import com.mapache.coinapi.utilities.AppConstants
 import com.mapache.coinapi.utilities.NetworkUtil
+import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -60,10 +62,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         else{
             viewManager = GridLayoutManager(this, 2)
         }
-        /*recyclerview.apply {
+        recyclerview.apply {
             adapter = CoinAdapter(coinList.coins, {coin: Coin -> clickedCoin(coin)})
             layoutManager = viewManager
-        }*/
+        }
+    }
+
+    fun clickedCoin(coin: Coin){
+        var bundle = Bundle()
+        bundle.putString(AppConstants.NAME_KEY, coin.name)
+        bundle.putString(AppConstants.COUNTRY_KEY, coin.country)
+        bundle.putString(AppConstants.VALUE_KEY, coin.value.toString())
+        bundle.putString(AppConstants.VALUE_US_KEY, coin.values_us.toString())
+        bundle.putString(AppConstants.YEAR_KEY, coin.year.toString())
+        bundle.putString(AppConstants.IS_AVAILABLE_KEY, coin.isAvailable.toString())
+        bundle.putString(AppConstants.IMG_KEY, coin.img)
+        var  mIntent = Intent(this, CoinActivity::class.java)
+        mIntent.putExtras(bundle)
+        startActivity(mIntent)
     }
 
     inner class FetchCoinTask : AsyncTask<String, Void, String>(){

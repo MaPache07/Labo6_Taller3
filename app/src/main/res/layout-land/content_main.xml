@@ -7,12 +7,21 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:showIn="@layout/app_bar_main"
-        tools:context=".MainActivity" >
+        android:orientation="horizontal"
+        tools:context=".MainActivity">
 
+    <!-- TODO (7.3.1) Note que se define  el recyclerview  y el panel para poner un fragmento-->
     <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerview"
-            android:layout_width="match_parent"
+            android:layout_width="@dimen/list_width"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/list_item_coin"/>
+
+    <FrameLayout
+            android:id="@+id/fragment_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="match_parent"
-            tools:listitem="@layout/list_item_coin" />
+            android:background="@color/colorAccent"></FrameLayout>
 
 </LinearLayout>
