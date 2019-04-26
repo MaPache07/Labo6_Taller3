@@ -8,6 +8,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.os.AsyncTask
 import android.os.Bundle
+import android.provider.BaseColumns
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
@@ -89,12 +90,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     inner class FetchCoinTask : AsyncTask<String, Void, String>(){
         override fun doInBackground(vararg params: String?): String? {
-            var connectivity : ConnectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            if(connectivity.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).state == NetworkInfo.State.CONNECTED){
+            val db = dbHelper.writableDatabase
+            if(isNetworkAvailable()){
                 if(params.size == 0){
                     return null
                 }
-                val db = dbHelper.writableDatabase
                 var coinApi = NetworkUtil().buildUrl(params[0]!!)
                 var listCoin = ""
                 try {
@@ -120,7 +120,29 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             }
             else{
-                //Aqui extrae de la base
+                /*val projection = arrayOf(
+                    BaseColumns._ID,
+                    DatabaseContract.CoinEntry.COLUMN_NAME,
+                    DatabaseContract.CoinEntry.COLUMN_COUNTRY,
+                    DatabaseContract.CoinEntry.COLUMN_VALUE,
+                    DatabaseContract.CoinEntry.COLUMN_VALUE_US,
+                    DatabaseContract.CoinEntry.COLUMN_YEAR,
+                    DatabaseContract.CoinEntry.COLUMN_ISAVAILABLE,
+                    DatabaseContract.CoinEntry.COLUMN_IMG
+                )
+                val cursor = db.query(
+                    DatabaseContract.CoinEntry.TABLE_NAME, // nombre de la tabla
+                    projection,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    "${DatabaseContract.CoinEntry.COLUMN_NAME} DESC"
+                )*/
             }
             return null
         }
@@ -130,6 +152,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             initRecycler()
         }
 
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE)
+        return if (connectivityManager is ConnectivityManager) {
+            val networkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
+            networkInfo?.isConnected ?: false
+        } else false
     }
 
     override fun onBackPressed() {
