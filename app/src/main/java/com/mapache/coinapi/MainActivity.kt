@@ -34,6 +34,7 @@ import java.io.IOException
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    lateinit var cList : ArrayList<Coin>
     var dbHelper = Database(this)
     lateinit var coinList : CoinList
 
@@ -69,7 +70,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             viewManager = GridLayoutManager(this, 2)
         }
         recyclerview.apply {
-            adapter = CoinAdapter(coinList.coins, {coin: Coin -> clickedCoin(coin)})
+            adapter = CoinAdapter(cList, {coin: Coin -> clickedCoin(coin)})
             layoutManager = viewManager
         }
     }
@@ -88,9 +89,49 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         startActivity(mIntent)
     }
 
+    fun inToBase(){
+        val db = dbHelper.readableDatabase
+        val projection = arrayOf(
+            BaseColumns._ID,
+            DatabaseContract.CoinEntry.COLUMN_NAME,
+            DatabaseContract.CoinEntry.COLUMN_COUNTRY,
+            DatabaseContract.CoinEntry.COLUMN_VALUE,
+            DatabaseContract.CoinEntry.COLUMN_VALUE_US,
+            DatabaseContract.CoinEntry.COLUMN_YEAR,
+            DatabaseContract.CoinEntry.COLUMN_ISAVAILABLE,
+            DatabaseContract.CoinEntry.COLUMN_IMG
+        )
+        val sortOrder = "${DatabaseContract.CoinEntry.COLUMN_NAME} DESC"
+        val cursor = db.query(
+            DatabaseContract.CoinEntry.TABLE_NAME, // nombre de la tabla
+            projection,
+            null,
+            null,
+            null,
+            null,
+            sortOrder
+        )
+        with(cursor) {
+            while (moveToNext()) {
+                var coin = Coin(
+                    getString(getColumnIndexOrThrow(BaseColumns._ID)),
+                    getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_NAME)),
+                    getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_COUNTRY)),
+                    getInt(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_VALUE)),
+                    getDouble(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_VALUE_US)),
+                    getInt(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_YEAR)),
+                    getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_ISAVAILABLE)).toBoolean(),
+                    getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_IMG))
+
+                )
+                cList.add(coin)
+            }
+        }
+        initRecycler()
+    }
+
     inner class FetchCoinTask : AsyncTask<String, Void, String>(){
         override fun doInBackground(vararg params: String?): String? {
-            val db = dbHelper.writableDatabase
             if(isNetworkAvailable()){
                 if(params.size == 0){
                     return null
@@ -102,7 +143,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 } catch (e : IOException){
                     throw RuntimeException("No se logro obtener la informacion")
                 }
+                val db = dbHelper.writableDatabase
                 coinList = Gson().fromJson(listCoin, CoinList::class.java)
+                cList = coinList.coins
                 if(DatabaseUtils.queryNumEntries(db, "coin").toInt() != coinList.coins.size){
                     db.delete("coin", null, null)
                     for(coin: Coin in coinList.coins){
@@ -118,38 +161,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         }
                     }
                 }
+                return "0"
             }
             else{
-                /*val projection = arrayOf(
-                    BaseColumns._ID,
-                    DatabaseContract.CoinEntry.COLUMN_NAME,
-                    DatabaseContract.CoinEntry.COLUMN_COUNTRY,
-                    DatabaseContract.CoinEntry.COLUMN_VALUE,
-                    DatabaseContract.CoinEntry.COLUMN_VALUE_US,
-                    DatabaseContract.CoinEntry.COLUMN_YEAR,
-                    DatabaseContract.CoinEntry.COLUMN_ISAVAILABLE,
-                    DatabaseContract.CoinEntry.COLUMN_IMG
-                )
-                val cursor = db.query(
-                    DatabaseContract.CoinEntry.TABLE_NAME, // nombre de la tabla
-                    projection,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    "${DatabaseContract.CoinEntry.COLUMN_NAME} DESC"
-                )*/
+                return "1"
             }
             return null
         }
 
         override fun onPostExecute(result: String?) {
             super.onPostExecute(result)
-            initRecycler()
+            if(result == "1") inToBase()
+            else initRecycler()
         }
 
     }
