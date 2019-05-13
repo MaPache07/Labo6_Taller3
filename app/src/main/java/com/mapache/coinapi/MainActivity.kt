@@ -34,7 +34,7 @@ import java.io.IOException
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    lateinit var cList : ArrayList<Coin>
+    var cList = ArrayList<Coin>()
     var dbHelper = Database(this)
     lateinit var coinList : CoinList
 
@@ -120,6 +120,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     getInt(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_VALUE)),
                     getDouble(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_VALUE_US)),
                     getInt(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_YEAR)),
+                    getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_REVIEW)),
                     getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_ISAVAILABLE)).toBoolean(),
                     getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_IMG))
 
@@ -148,17 +149,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 cList = coinList.coins
                 if(DatabaseUtils.queryNumEntries(db, "coin").toInt() != coinList.coins.size){
                     db.delete("coin", null, null)
-                    for(coin: Coin in coinList.coins){
+                    for(coin: Coin in cList){
                         val values = ContentValues().apply {
                             put(DatabaseContract.CoinEntry.COLUMN_NAME, coin.name)
                             put(DatabaseContract.CoinEntry.COLUMN_COUNTRY, coin.country)
                             put(DatabaseContract.CoinEntry.COLUMN_VALUE, coin.value)
                             put(DatabaseContract.CoinEntry.COLUMN_VALUE_US, coin.values_us)
                             put(DatabaseContract.CoinEntry.COLUMN_YEAR, coin.year)
-                            put(DatabaseContract.CoinEntry.COLUMN_VALUE, coin.value)
+                            put(DatabaseContract.CoinEntry.COLUMN_REVIEW, coin.review)
                             put(DatabaseContract.CoinEntry.COLUMN_ISAVAILABLE, coin.isAvailable)
                             put(DatabaseContract.CoinEntry.COLUMN_IMG, coin.img)
                         }
+                        db?.insert(DatabaseContract.CoinEntry.TABLE_NAME, null, values)
                     }
                 }
                 return "0"
