@@ -165,12 +165,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         }
                         db?.insert(DatabaseContract.CoinEntry.TABLE_NAME, null, values)
                     }
+                    return "0"
                 }
-                return "0"
             }
-            else{
-                return "1"
-            }
+            else return "1"
             return null
         }
 
