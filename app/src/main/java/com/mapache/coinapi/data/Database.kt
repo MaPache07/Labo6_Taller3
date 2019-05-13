@@ -7,13 +7,14 @@ import android.provider.BaseColumns
 
 private const val SQL_CREATE_ENTRIES =
     "CREATE TABLE ${DatabaseContract.CoinEntry.TABLE_NAME} (" +
-            "${BaseColumns._ID} TEXT PRIMARY KEY," +
+            "${DatabaseContract.CoinEntry.COLUMN_ID} TEXT PRIMARY KEY," +
             "${DatabaseContract.CoinEntry.COLUMN_NAME} TEXT," +
             "${DatabaseContract.CoinEntry.COLUMN_COUNTRY} TEXT," +
-            "${DatabaseContract.CoinEntry.COLUMN_VALUE} TEXT," +
-            "${DatabaseContract.CoinEntry.COLUMN_VALUE_US} TEXT,"+
-            "${DatabaseContract.CoinEntry.COLUMN_YEAR}TEXT," +
-            "${DatabaseContract.CoinEntry.COLUMN_ISAVAILABLE} TEXT," +
+            "${DatabaseContract.CoinEntry.COLUMN_VALUE} INT," +
+            "${DatabaseContract.CoinEntry.COLUMN_VALUE_US} DOUBLE,"+
+            "${DatabaseContract.CoinEntry.COLUMN_YEAR} INT," +
+            "${DatabaseContract.CoinEntry.COLUMN_REVIEW} TEXT," +
+            "${DatabaseContract.CoinEntry.COLUMN_ISAVAILABLE} BOOLEAN," +
             "${DatabaseContract.CoinEntry.COLUMN_IMG} TEXT)"
 
 private const val SQL_DELETE_ENTRIES =

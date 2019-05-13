@@ -82,6 +82,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         bundle.putString(AppConstants.VALUE_KEY, coin.value.toString())
         bundle.putString(AppConstants.VALUE_US_KEY, coin.values_us.toString())
         bundle.putString(AppConstants.YEAR_KEY, coin.year.toString())
+        bundle.putString(AppConstants.REVIEW_KEY, coin.review)
         bundle.putString(AppConstants.IS_AVAILABLE_KEY, coin.isAvailable.toString())
         bundle.putString(AppConstants.IMG_KEY, coin.img)
         var  mIntent = Intent(this, CoinActivity::class.java)
@@ -98,6 +99,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             DatabaseContract.CoinEntry.COLUMN_VALUE,
             DatabaseContract.CoinEntry.COLUMN_VALUE_US,
             DatabaseContract.CoinEntry.COLUMN_YEAR,
+            DatabaseContract.CoinEntry.COLUMN_REVIEW,
             DatabaseContract.CoinEntry.COLUMN_ISAVAILABLE,
             DatabaseContract.CoinEntry.COLUMN_IMG
         )
@@ -151,6 +153,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     db.delete("coin", null, null)
                     for(coin: Coin in cList){
                         val values = ContentValues().apply {
+                            put(DatabaseContract.CoinEntry.COLUMN_ID, coin._id)
                             put(DatabaseContract.CoinEntry.COLUMN_NAME, coin.name)
                             put(DatabaseContract.CoinEntry.COLUMN_COUNTRY, coin.country)
                             put(DatabaseContract.CoinEntry.COLUMN_VALUE, coin.value)

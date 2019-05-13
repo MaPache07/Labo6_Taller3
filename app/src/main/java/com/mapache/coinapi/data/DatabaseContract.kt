@@ -5,6 +5,7 @@ import android.provider.BaseColumns
 object DatabaseContract {
     object CoinEntry : BaseColumns {
         const val TABLE_NAME = "coin"
+        const val COLUMN_ID = "_id"
         const val COLUMN_NAME = "name"
         const val COLUMN_COUNTRY = "country"
         const val COLUMN_VALUE = "value"
