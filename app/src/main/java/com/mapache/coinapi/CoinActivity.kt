@@ -2,8 +2,10 @@ package com.mapache.coinapi
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import com.bumptech.glide.Glide
 import com.mapache.coinapi.utilities.AppConstants
 import kotlinx.android.synthetic.main.activity_coin.*
+import kotlinx.android.synthetic.main.nav_header_main.*
 
 class CoinActivity : AppCompatActivity() {
 
@@ -41,9 +43,8 @@ class CoinActivity : AppCompatActivity() {
         text_value_us_coin.text = sValueUs
         text_year_coin.text = sYear
         text_available_coin.text = sIsAvailable
-        /*with(this){
-            Glide.with(this).load(sImg).into(image_coin)
-        }*/
+        Glide.with(this).load(sImg).into(imageView)
+
     }
 
 }

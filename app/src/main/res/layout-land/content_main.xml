@@ -17,11 +17,13 @@
             android:layout_height="wrap_content"
             tools:listitem="@layout/list_item_coin"/>
 
-    <FrameLayout
-            android:id="@+id/fragment_content"
+    <ScrollView
+            android:id="@+id/scroll_content"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
-            android:background="@color/colorAccent"></FrameLayout>
+            android:background="@color/colorAccent">
+
+    </ScrollView>
 
 </LinearLayout>
