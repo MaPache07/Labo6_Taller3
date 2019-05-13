@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             DatabaseContract.CoinEntry.COLUMN_ISAVAILABLE,
             DatabaseContract.CoinEntry.COLUMN_IMG
         )
-        val sortOrder = "${DatabaseContract.CoinEntry.COLUMN_NAME} DESC"
+        val sortOrder = "${DatabaseContract.CoinEntry.COLUMN_NAME} ASC"
         val cursor = db.query(
             DatabaseContract.CoinEntry.TABLE_NAME, // nombre de la tabla
             projection,
