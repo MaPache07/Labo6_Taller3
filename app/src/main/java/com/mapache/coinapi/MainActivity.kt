@@ -20,6 +20,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.Menu
 import com.google.gson.Gson
 import com.mapache.coinapi.data.Database
@@ -31,12 +32,15 @@ import com.mapache.coinapi.utilities.AppConstants
 import com.mapache.coinapi.utilities.NetworkUtil
 import kotlinx.android.synthetic.main.content_main.*
 import java.io.IOException
+import kotlin.math.log
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    var filterList = ArrayList<Coin>()
     var cList = ArrayList<Coin>()
     var dbHelper = Database(this)
     lateinit var coinList : CoinList
+    lateinit var adapterC : CoinAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +65,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         FetchCoinTask().execute(AppConstants.COIN_LINK)
     }
 
-    fun initRecycler(){
+    fun initRecycler(list : ArrayList<Coin>){
         var viewManager = LinearLayoutManager(this)
         if(this.resources.configuration.orientation == 2 || this.resources.configuration.orientation == 4){
             viewManager = LinearLayoutManager(this)
@@ -69,8 +73,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         else{
             viewManager = GridLayoutManager(this, 2)
         }
+        adapterC = CoinAdapter(list, {coin: Coin -> clickedCoin(coin)})
         recyclerview.apply {
-            adapter = CoinAdapter(cList, {coin: Coin -> clickedCoin(coin)})
+            adapter = adapterC
             layoutManager = viewManager
         }
     }
@@ -129,7 +134,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 cList.add(coin)
             }
         }
-        initRecycler()
+        initRecycler(cList)
     }
 
     inner class FetchCoinTask : AsyncTask<String, Void, String>(){
@@ -174,7 +179,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         override fun onPostExecute(result: String?) {
             super.onPostExecute(result)
             if(result == "1") inToBase()
-            else initRecycler()
+            else initRecycler(cList)
         }
 
     }
@@ -197,15 +202,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
@@ -213,30 +214,52 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_home -> {
-                // Handle the camera action
+                FetchCoinTask().execute(AppConstants.COIN_LINK)
             }
-            R.id.nav_gallery -> {
-
+            R.id.nav_australia -> {
+                QuitCoin("Australia")
             }
-            R.id.nav_slideshow -> {
-
+            R.id.nav_canada -> {
+                QuitCoin("Canada")
             }
-            R.id.nav_tools -> {
-
+            R.id.nav_corea_sur -> {
+                QuitCoin("Corea del sur")
             }
-            R.id.nav_share -> {
-
+            R.id.nav_el_salvador -> {
+                QuitCoin("El salvador")
             }
-            R.id.nav_send -> {
-
+            R.id.nav_europa -> {
+                QuitCoin("Europa")
+            }
+            R.id.nav_inglaterra -> {
+                QuitCoin("Inglaterra")
+            }
+            R.id.nav_japon -> {
+                QuitCoin("Japon")
+            }
+            R.id.nav_mexico -> {
+                QuitCoin("Mexico")
+            }
+            R.id.nav_suiza -> {
+                QuitCoin("Suiza")
+            }
+            R.id.nav_venezuela -> {
+                QuitCoin("Venezuela")
             }
         }
+        initRecycler(filterList)
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    fun QuitCoin(country : String){
+        filterList.clear()
+        for(coin : Coin in cList){
+            if(coin.country == country) filterList.add(coin)
+        }
     }
 
     override fun onDestroy() {

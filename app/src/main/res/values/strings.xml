@@ -16,4 +16,14 @@
     <string name="menu_tools">Tools</string>
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
+    <string name="menu_australia">Australia</string>
+    <string name="menu_canada">Canada</string>
+    <string name="menu_corea_del_sur">Corea Del Sur</string>
+    <string name="menu_el_salvador">El Salvador</string>
+    <string name="menu_europa">Europa</string>
+    <string name="menu_inglaterra">Inglaterra</string>
+    <string name="menu_japon">Japon</string>
+    <string name="menu_mexico">Mexico</string>
+    <string name="manu_suiza">Suiza</string>
+    <string name="manu_venezuela">Venezuela</string>
 </resources>
