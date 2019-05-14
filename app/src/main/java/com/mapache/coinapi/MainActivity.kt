@@ -60,9 +60,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         )
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
-
         navView.setNavigationItemSelectedListener(this)
-        FetchCoinTask().execute(AppConstants.COIN_LINK)
+
+        if(savedInstanceState != null){
+            filterList = savedInstanceState.getParcelableArrayList(AppConstants.FILTER_KEY)
+            initRecycler(filterList)
+        } else FetchCoinTask().execute(AppConstants.COIN_LINK)
     }
 
     fun initRecycler(list : ArrayList<Coin>){
@@ -184,6 +187,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     }
 
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        if(filterList.size != 0){
+            outState!!.putParcelableArrayList(AppConstants.FILTER_KEY, filterList)
+        }
+    }
+
     private fun isNetworkAvailable(): Boolean {
         val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE)
         return if (connectivityManager is ConnectivityManager) {
@@ -214,6 +224,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        filterList.clear()
         when (item.itemId) {
             R.id.nav_home -> {
                 FetchCoinTask().execute(AppConstants.COIN_LINK)
@@ -256,7 +267,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     fun QuitCoin(country : String){
-        filterList.clear()
         for(coin : Coin in cList){
             if(coin.country == country) filterList.add(coin)
         }
