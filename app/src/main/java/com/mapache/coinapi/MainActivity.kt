@@ -20,11 +20,11 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
-import android.util.Log
 import android.view.Menu
 import com.google.gson.Gson
 import com.mapache.coinapi.data.Database
 import com.mapache.coinapi.data.DatabaseContract
+import com.mapache.coinapi.fragments.CoinFragment
 import com.mapache.coinapi.models.Coin
 import com.mapache.coinapi.models.CoinList
 import com.mapache.coinapi.utilities.AppConstants
@@ -76,18 +76,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     fun clickedCoin(coin: Coin){
-        var bundle = Bundle()
-        bundle.putString(AppConstants.NAME_KEY, coin.name)
-        bundle.putString(AppConstants.COUNTRY_KEY, coin.country)
-        bundle.putString(AppConstants.VALUE_KEY, coin.value.toString())
-        bundle.putString(AppConstants.VALUE_US_KEY, coin.values_us.toString())
-        bundle.putString(AppConstants.YEAR_KEY, coin.year.toString())
-        bundle.putString(AppConstants.REVIEW_KEY, coin.review)
-        bundle.putString(AppConstants.IS_AVAILABLE_KEY, coin.isAvailable.toString())
-        bundle.putString(AppConstants.IMG_KEY, coin.img)
-        var  mIntent = Intent(this, CoinActivity::class.java)
-        mIntent.putExtras(bundle)
-        startActivity(mIntent)
+        if(this.resources.configuration.orientation == 2 || this.resources.configuration.orientation == 4){
+            var coinFragment = CoinFragment.newInstance(coin)
+            supportFragmentManager.beginTransaction().replace(R.id.scroll_content, coinFragment).commit()
+        }
+        else{
+            var bundle = Bundle()
+            bundle.putParcelable(AppConstants.COIN_KEY, coin)
+            var  mIntent = Intent(this, CoinActivity::class.java)
+            mIntent.putExtras(bundle)
+            startActivity(mIntent)
+        }
     }
 
     fun inToBase(){
